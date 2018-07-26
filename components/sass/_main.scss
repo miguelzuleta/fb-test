@@ -1,0 +1,14 @@
+body {
+	background-color: $color1;
+}
+
+main{
+	@include center();
+	padding: 20px;
+	background-color: $color2;
+	color: darken($color2);
+
+	h1 {
+		font-weight: bold;
+	}
+}
