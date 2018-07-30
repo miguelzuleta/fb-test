@@ -10,7 +10,6 @@ import uglify       from 'gulp-uglify'
 import scssLint     from 'gulp-scss-lint'
 import autoprefixer from 'gulp-autoprefixer'
 import eslint       from 'gulp-eslint'
-import include      from "gulp-include"
 import rename       from "gulp-rename"
 import sourcemaps   from 'gulp-sourcemaps'
 
@@ -61,7 +60,6 @@ gulp.task('connect', () => {
 
 gulp.task('html', () => {
 	gulp.src('components/html/*.html')
-		.pipe(include())
 		.pipe(htmlmin({
 			collapseWhitespace: minifyHMTL
 		}))

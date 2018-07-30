@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang='en'></html>
 <head>
-  <meta charset='UTF-8'>
-  <title>Task Template</title>
-  <link href='styles.css' rel='stylesheet'>
+	<meta charset='UTF-8'>
+	<title>FB Test</title>
+	<link href='styles.css' rel='stylesheet'>
+	<script src="fb-config.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-auth.js"></script>
 </head>
 <body>
   <main>
     <h1>Task Template</h1>
+    <pre id="obj"></pre>
+    <button class="num-t"># * 7</button>
+    <button class="num-d"># / 9</button>
+    <button class="log-in">log in</button>
+    <button class="log-out">log out</button>
+    <input class="email" type="text" name="email" placeholder="email">
+    <input class="password" type="password" name="password" placeholder="password">
+    <ol></ol>
     <p id="react-render"></p>
-    <!--=include includes/inc1.html -->
   </main>
+	<script src='js.js'></script>
 </body>
-<script src='js.js'></script>
+</html>
