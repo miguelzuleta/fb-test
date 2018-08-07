@@ -3,7 +3,9 @@ body {
 }
 
 main{
-	@include center();
+	// @include center();
+	width: 40vw;
+	margin: 40px auto;
 	padding: 20px;
 	background-color: $color2;
 	color: darken($color2);
@@ -13,6 +15,7 @@ main{
 	}
 
 	ol {
+		margin-left: 30px;
 		list-style-type: decimal;
 	}
 

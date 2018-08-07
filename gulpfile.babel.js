@@ -128,4 +128,4 @@ gulp.task('watch', () => {
 	gulp.watch('components/js/*.js', ['js', 'lint'])
 })
 
-gulp.task('default', ['html', 'sass', 'js', 'lint', ...runConnect, ...runWatch])
+gulp.task('default', ['html', 'sass', 'js', ...runConnect, ...runWatch])
