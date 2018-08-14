@@ -11,19 +11,20 @@ const db = firebase.firestore()
 db.settings({ timestampsInSnapshots: true })
 
 const listItems = results => {
-
-	let list = []
+	let list = {}
 
 	if (results !== null) {
-		list = results.docChanges().map((change, index) => {
-			let docID = {
-				id: change.doc.id.substring(0, 5)
-			}
-			let data = Object.assign(docID, change.doc.data())
+		results.docChanges().forEach((change, index) => {
+			let docID = change.doc.id.substring(0, 5)
 
-			if (change.type === 'added') {
-				console.log(data)
-				return data
+			let data = Object.assign({id: docID}, change.doc.data())
+
+			if (change.type === 'added' || change.type === 'modified') {
+				list[docID] = data
+			}
+
+			if (change.type === 'removed') {
+				list = { remove: docID }
 			}
 		})
 	}
@@ -32,7 +33,7 @@ const listItems = results => {
 }
 
 const ListElems = props => {
-	let li = props.stamp.map(elem => {
+	let li = Object.values(props.stamp).map(elem => {
 		return (
 			<li data-id={elem.id} key={elem.id}>
 				{elem.seconds} - {elem.milliseconds}
@@ -52,7 +53,7 @@ class Test extends Component {
 		this.db = db.collection('time-stamps')
 
 		this.state = {
-			stampList: []
+			stampList: {}
 		}
 	}
 
@@ -60,10 +61,21 @@ class Test extends Component {
 		console.log('it mounted!')
 
 		this.db.onSnapshot(results => {
-			let growingList = this.state.stampList.concat(listItems(results))
+			let { stampList } = this.state
+
+			let newListElem = listItems(results)
+			let keyToRemove = newListElem['remove']
+
+			if (keyToRemove) {
+				delete stampList[keyToRemove]
+
+				newListElem = stampList
+			} else {
+				newListElem = Object.assign(stampList, newListElem)
+			}
 
 			this.setState({
-				stampList: growingList
+				stampList: newListElem
 			})
 		})
 	}
@@ -76,7 +88,7 @@ class Test extends Component {
 			milliseconds: date.getMilliseconds()
 		}
 
-		this.db.doc().set(newDateSet, { merge: true }).then(() => {
+		this.db.doc().set(newDateSet).then(() => {
 			console.log('doc successful')
 		})
 	}
@@ -84,7 +96,7 @@ class Test extends Component {
 	render() {
 		return (
 			<div>
-				<h1>Testing {this.props.nee}</h1>
+				<h1>Testing {this.props.testName}</h1>
 				<button onClick={ this.addNew.bind(this) } className="date">data</button>
 				<ListElems stamp={this.state.stampList}/>
  			</div>
@@ -93,58 +105,6 @@ class Test extends Component {
 }
 
 ReactDOM.render(
-	<Test nee="this thing."/>,
+	<Test testName="magic."/>,
 	document.getElementById('react-test')
 )
-
-
-
-// const ol = document.querySelector('main ol')
-// const dateBtn = document.querySelector('.date')
-
-// const db = firebase.firestore()
-// db.settings({ timestampsInSnapshots: true })
-
-
-// dateBtn.addEventListener('click', () => {
-// 	let date = new Date()
-
-// 	db.collection('time-stamps').doc().set({
-// 		seconds: date.getSeconds(),
-// 		milliseconds: date.getMilliseconds()
-// 	}).then(result => {
-// 		console.log('shit went in!')
-// 	})
-// })
-
-// db.collection('time-stamps')
-// 	.onSnapshot(results => {
-
-// 	results.docChanges().forEach(change => {
-
-// 		let data = change.doc.data()
-// 		let docEl = document.querySelector(`[data-id="${change.doc.id}"]`)
-// 		console.log(data)
-
-// 		if (change.type === 'removed') {
-// 			docEl.remove()
-// 			console.log('DOCUMENT REMOVED')
-// 		}
-
-// 		if (change.type === 'modified') {
-// 			docEl.innerText = data.milliseconds
-// 			console.log('DOCUMENT MODIFIED')
-// 		}
-
-// 		if (change.type === 'added') {
-// 			let list = document.createElement('li')
-// 			list.setAttribute('data-id', change.doc.id)
-// 			list.innerText = `${data.milliseconds} - ${data.seconds}`
-// 			ol.appendChild(list)
-// 			console.log('DOCUMENT ADDED')
-// 		}
-
-// 	})
-
-// })
-
