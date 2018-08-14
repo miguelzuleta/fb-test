@@ -10,90 +10,74 @@ firebase.initializeApp(config)
 const db = firebase.firestore()
 db.settings({ timestampsInSnapshots: true })
 
-const ListItems = ({results}) => {
+const listItems = results => {
 
-	let list = () => <li>blag</li>
+	let list = []
 
 	if (results !== null) {
-		list = results.docChanges().map(change => {
-			console.log('change')
-			let data = change.doc.data()
+		list = results.docChanges().map((change, index) => {
+			let docID = {
+				id: change.doc.id.substring(0, 5)
+			}
+			let data = Object.assign(docID, change.doc.data())
 
 			if (change.type === 'added') {
-				return (
-					<li id={change.doc.id} key={change.newIndex}>
-						{`${data.milliseconds} - ${data.seconds}`}
-					</li> 
-				)
+				console.log(data)
+				return data
 			}
 		})
 	}
 
-	return (
-		<ol>{ list }</ol>
-	)
-
+	return list
 }
 
-// 	// console.log(list)
+const ListElems = props => {
+	let li = props.stamp.map(elem => {
+		return (
+			<li data-id={elem.id} key={elem.id}>
+				{elem.seconds} - {elem.milliseconds}
+			</li>
+		)
+	})
 
-// 	// return list
-
-// let arr = 'miguel'.split('')
-
-// let Testing = ({ array }) => {
-// 	let list = array.map((letter, index) => {
-// 		return (
-// 			<li key={index}>
-// 				{letter}
-// 			</li>
-// 		)
-// 	})
-
-// 	return (
-// 		<ul>{list}</ul>
-// 	)
-// }
-
-
+	return (
+		<ol>{ li }</ol>
+	)
+}
 
 class Test extends Component {
 	constructor() {
 		super()
-		
-		this.state = {
-			stamps: null
-		}
 
-		this.addNew = this.addNew.bind(this)
+		this.db = db.collection('time-stamps')
+
+		this.state = {
+			stampList: []
+		}
 	}
 
 	componentDidMount() {
 		console.log('it mounted!')
 
-		db.collection('time-stamps').onSnapshot(results => {
+		this.db.onSnapshot(results => {
+			let growingList = this.state.stampList.concat(listItems(results))
+
 			this.setState({
-				stamps: results
+				stampList: growingList
 			})
-		})		
+		})
 	}
 
 	addNew() {
 		let date = new Date()
 
-		console.log(date)
-
-		db.collection('time-stamps').doc().set({
+		let newDateSet = {
 			seconds: date.getSeconds(),
 			milliseconds: date.getMilliseconds()
-		}).then(clickResult => {
-			console.log('shit went in!')
-			// console.log(clickResult)
-			// this.setState({
-			// 	stamps: clickResult
-			// })
+		}
 
-			// console.log(this.state.stamps)
+		this.db.doc().set(newDateSet, { merge: true }).then(() => {
+			console.log('doc successful')
 		})
 	}
 
@@ -101,9 +85,9 @@ class Test extends Component {
 		return (
 			<div>
 				<h1>Testing {this.props.nee}</h1>
-				<button onClick={ this.addNew } className="date">data</button>
-	    		<ListItems results={ this.state.stamps }/>
-    		</div>
+				<button onClick={ this.addNew.bind(this) } className="date">data</button>
+				<ListElems stamp={this.state.stampList}/>
+ 			</div>
 		)
 	}
 }
