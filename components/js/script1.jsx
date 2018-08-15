@@ -106,5 +106,5 @@ class Test extends Component {
 
 ReactDOM.render(
 	<Test testName="magic."/>,
-	document.getElementById('react-test')
+	document.getElementById('main')
 )
