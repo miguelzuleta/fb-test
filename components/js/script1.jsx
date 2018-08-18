@@ -97,14 +97,80 @@ class Test extends Component {
 		return (
 			<div>
 				<h1>Testing {this.props.testName}</h1>
-				<button onClick={ this.addNew.bind(this) } className="date">data</button>
+				<button onClick={this.addNew.bind(this)}>data</button>
 				<ListElems stamp={this.state.stampList}/>
  			</div>
 		)
 	}
 }
 
+const Form = props => {
+	return (
+		<div>
+			<button onClick={props.logClick}>LOG IN</button>
+			<button onClick={props.signClick}>SIGN UP</button>
+			<input onChange={props.user} placeholder="user" />
+			<input onChange={props.pass} placeholder="password" />
+		</div>
+	)
+}
+
+class DOMcontent extends Component {
+	constructor() {
+		super()
+
+		this.state = {
+			loggedIn: false,
+			signedIn: false,
+			userVal: '',
+			passVal: ''
+		}
+	}
+
+	handleUserVal(event) {
+		this.setState({
+			userVal: event.target.value
+		})
+	}
+
+	handlePassVal(event) {
+		this.setState({
+			passVal: event.target.value
+		})
+	}
+
+	handleLogin() {
+		// this.setState({
+		// 	loggedIn: true
+		// })
+
+		console.log('logged in')
+	}
+
+	handleSignin() {
+		// this.setState({
+		// 	loggedIn: true
+		// })
+
+		console.log('signed in')
+	}
+
+	render() {
+		// console.log(this.state.userVal)
+		if (!this.state.loggedIn) {
+			return <Form
+				logClick={ this.handleLogin.bind(this) }
+				signClick={ this.handleSignin.bind(this) }
+				user={ this.handleUserVal.bind(this) }
+				pass={ this.handlePassVal.bind(this) }
+			/>
+		}
+
+		return <Test testName="magic."/>
+	}
+}
+
 ReactDOM.render(
-	<Test testName="magic."/>,
+	<DOMcontent />,
 	document.getElementById('main')
 )
